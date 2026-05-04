@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: kuweb
-          image: alskung/testweb:3.0
+          image: alskung/testweb:4.0
           resources:
             requests:
               memory: "128Mi"
