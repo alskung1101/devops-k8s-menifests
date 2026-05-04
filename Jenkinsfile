@@ -12,7 +12,9 @@ pipeline {
                 dir('department-api'){
                 sh 'pwd'
                 sh 'ls -al'
-                echo "${params.DOCKER_IMAGE_VERSION}"
+                echo "Received Docker Image Version : ${params.DOCKER_IMAGE_VERSION}"
+                sh "sed -i 's|alskung/department-service:.*|alskung/department-service:${params.DOCKER_IMAGE_VERSION}|g' deploy.yaml"
+                sh 'cat deploy.yaml'
                 }
             }
         }
