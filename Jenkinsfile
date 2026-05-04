@@ -30,7 +30,6 @@ pipeline {
                 sh 'git add .'
                 sh "git commit -m 'Update Image Version ${params.DOCKER_IMAGE_VERSION}'"
                 sh 'git status'
-                sh 'git push'
 
                 sshagent(['github-k8s-manifests']) {
                     sh 'git push'
