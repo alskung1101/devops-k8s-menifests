@@ -1,7 +1,7 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
-  name: department-api-deploy
+  name: department-api-rollout
   namespace: university
 spec:
   replicas: 3
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: department-api
-        image: alskung/department-service:45
+        image: alskung/department-service:47
         resources:
           requests:
             memory: "128Mi"
@@ -43,4 +43,9 @@ spec:
             port: 8088
           initialDelaySeconds: 5
           periodSeconds: 5
+  strategy:
+    blueGreen:
+      activeService: department-api-active
+      previewService: department-api-preview
+      autoPromotionEnabled: false          
         
