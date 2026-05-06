@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: department-api
-        image: alskung/department-service:44
+        image: alskung/department-service:45
         resources:
           requests:
             memory: "128Mi"
