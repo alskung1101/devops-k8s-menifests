@@ -3,31 +3,69 @@ pipeline {
 
     parameters {
         string(name: 'DOCKER_IMAGE_VERSION', defaultValue: '', description: 'Docker Image Version')
+        string(name: 'DID_BUILD_APP', defaultValue: '', description: 'Did Build APP')
+        string(name: 'DID_BUILD_API', defaultValue: '', description: 'Did Build API')
     }
 
     stages {
-        stage('update deploy.yaml') {
+        stage('Checkout Main Branches') {
             steps {
-                // Jenkins 파이프라인에서 작업 디렉터리를 변경할 때 사용한다.
+                sh 'git checkout main'
+                echo "DOCKER_IMAGE_VERSION: ${params.DOCKER_IMAGE_VERSION}"
+                echo "DID_BUILD_APP: ${params.DID_BUILD_APP}"
+                echo "DID_BUILD_API: ${params.DID_BUILD_API}"
+            }
+        }
+
+        stage('update Vue deploy.yaml') {
+            when {
+                expression {
+                    return params.DID_BUILD_APP == "true"
+                }
+            }
+
+            steps {
+                dir('university-vue') {
+                    sh 'pwd'
+                    sh 'ls -al'
+                    echo "Received Docker Image Version : ${params.DOCKER_IMAGE_VERSION}"
+                    sh "sed -i 's|alskung/university-vue:.*|alskung/university-vue:${params.DOCKER_IMAGE_VERSION}|g' deploy.yaml"
+                    sh 'cat deploy.yaml'
+                }
+            }
+        }
+
+        stage('update API deploy.yaml') {
+            when {
+                expression {
+                    return params.DID_BUILD_API == "true"
+                }
+            }
+
+            steps {
                 dir('department-api') {
                     sh 'pwd'
                     sh 'ls -al'
                     echo "Received Docker Image Version : ${params.DOCKER_IMAGE_VERSION}"
-                    sh 'git checkout main'
-                    sh "sed -i 's|alskung/department-service:.*|alskung/department-service:${params.DOCKER_IMAGE_VERSION}|g' deploy.yaml"
+                    sh "sed -i 's|ismoon/department-service:.*|ismoon/department-service:${params.DOCKER_IMAGE_VERSION}|g' deploy.yaml"
                     sh 'cat deploy.yaml'
                 }
             }
         }
 
         stage('Commit & Push') {
+            when {
+                expression { 
+                    return params.DID_BUILD_API == "true" ||  params.DID_BUILD_APP == "true"
+                }
+            }
+
             steps {
-                sh 'git status'
                 sh 'git config --list'
                 sh 'git config user.name "jenkins"'
                 sh 'git config user.email "jenkins@beyond.com"'
                 sh 'git config --list'
-                sh 'git add .'
+                sh "git add ."
                 sh "git commit -m 'Update Image Version ${params.DOCKER_IMAGE_VERSION}'"
                 sh 'git status'
 
@@ -37,4 +75,4 @@ pipeline {
             }
         }
     }
-}
+}        
