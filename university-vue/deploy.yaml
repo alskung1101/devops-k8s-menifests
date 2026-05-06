@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: department-api-deploy
+  name: university-vue-deploy
   namespace: university
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: department-api
+      app: university-vue
   template:
     metadata:
       labels:
-        app: department-api
+        app: university-vue
     spec:
       containers:
-      - name: department-api
-        image: alskung/department-service:50
+      - name: university-vue
+        image: alskung/university-vue:51
         resources:
           requests:
             memory: "128Mi"
@@ -24,22 +24,4 @@ spec:
             memory: "256Mi"
             cpu: "1000m"
         ports:
-        - containerPort: 8088
-        startupProbe:
-          httpGet:
-            path: /actuator/health
-            port: 8088
-          failureThreshold: 10
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /actuator/health/liveness
-            port: 8088
-          initialDelaySeconds: 10
-          periodSeconds: 20
-        readinessProbe:
-          httpGet:
-            path: /actuator/health/readiness
-            port: 8088
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - containerPort: 80
